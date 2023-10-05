@@ -25,24 +25,25 @@ paiwan_caus <- paiwan_caus %>%
 ```
 
 
-```{r}
+
+```{r include=FALSE}
 pa = filter(paiwan_caus, Affix=='pa')
 paka = filter(paiwan_caus, Affix=='paka')
 pape = filter(paiwan_caus, Affix=='pape')
 
+
 paka = rbind(paka, paka)
 pape = rbind(pape, pape)
 
-all = rbind(pa, paka, pape)
+paiwan_caus = rbind(pa, paka, pape)
 
 ```
-
 
 ```{r}
 library(Rling); library(rms); library(visreg); library(car)
 library(mlogit); library(polytomous)
 
-all <- all %>%
+all <- paiwan_caus %>%
   mutate(Affix = factor(Affix, level=c('paka', 'pape', 'pa')),
          Trans = factor(Trans),
          Type = factor(Type, level=c('volitional', 'affective', 'physical', 'inducive')))
