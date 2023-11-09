@@ -361,7 +361,18 @@ display: none;
 library(tidytext)
 library(quanteda)
 library(stringr)</code></pre>
-<pre class="r"><code>paiwan_caus &lt;- read_csv(&quot;C:/Users/maochang/Desktop/Paiwan causatives/paiwan_caus_all.csv&quot;)</code></pre>
+<pre class="r"><code>paiwan_caus &lt;- read_csv(&quot;C:/Users/maochang/Desktop/Paiwan causatives/paiwan_caus_all.csv&quot;)
+
+head(paiwan_caus)</code></pre>
+<pre><code>## # A tibble: 6 × 4
+##   Affix Trans Type       Paiwan                                                 
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;                                                  
+## 1 pa    INTR  volitional paquziquzip ta bukelulj timadju.                       
+## 2 pa    TR    affective  inika pacalivaten nua sakinting a pairang.             
+## 3 pa    TR    inducive   adju ari vaiki a pacun tua iga.                        
+## 4 pa    TR    physical   a sipualjaljak a lumamad kemasi ta menutjmutj ta tutu …
+## 5 pa    INTR  volitional na puamin ti giau tua paveli tua kakanen.              
+## 6 pa    TR    inducive   parekiljivaljivaku a marekakakaka aya kai nikama.</code></pre>
 <pre class="r"><code>normalize_document &lt;- function(texts) {
   texts %&gt;%
     str_replace_all(&quot;pa-ka&quot;, &quot;paka&quot;) %&gt;%
@@ -369,23 +380,44 @@ library(stringr)</code></pre>
     str_replace_all(&quot;[^A-z\\s]&quot;, &quot; &quot;)
 }
 
-paiwan_caus$Paiwan &lt;- normalize_document(paiwan_caus$Paiwan)</code></pre>
-<pre class="r"><code>paiwan_caus_df = paiwan_caus %&gt;%
+paiwan_caus$Paiwan &lt;- normalize_document(paiwan_caus$Paiwan)
+
+head(paiwan_caus)</code></pre>
+<pre><code>## # A tibble: 6 × 4
+##   Affix Trans Type       Paiwan                                                 
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;                                                  
+## 1 pa    INTR  volitional &quot;paquziquzip ta bukelulj timadju &quot;                     
+## 2 pa    TR    affective  &quot;inika pacalivaten nua sakinting a pairang &quot;           
+## 3 pa    TR    inducive   &quot;adju ari vaiki a pacun tua iga &quot;                      
+## 4 pa    TR    physical   &quot;a sipualjaljak a lumamad kemasi ta menutjmutj ta tutu…
+## 5 pa    INTR  volitional &quot;na puamin ti giau tua paveli tua kakanen &quot;            
+## 6 pa    TR    inducive   &quot;parekiljivaljivaku a marekakakaka aya kai nikama &quot;</code></pre>
+<pre class="r"><code>paiwan_caus_df &lt;- paiwan_caus %&gt;%
   mutate(Paiwan_new = case_when(Affix == &#39;pa&#39; ~ str_replace_all(Paiwan, &#39;\\s*pa\\s*&#39;, &#39; pa &#39;),
                                 Affix == &#39;paka&#39; ~ str_replace_all(Paiwan, &#39;\\s*paka\\s*&#39;, &#39; paka &#39;),
                                 T ~ str_replace_all(Paiwan, &#39;\\s*pape\\s*&#39;, &#39; pape &#39;))
          ) 
   
-pa &lt;- filter(paiwan_caus_df, Affix==&#39;pa&#39;) %&gt;%
-  mutate(doc_id = row_number()) %&gt;%
-  select(doc_id, Paiwan_new)
-paka &lt;- filter(paiwan_caus_df, Affix==&#39;paka&#39;) %&gt;%
-  mutate(doc_id = row_number()) %&gt;%
-  select(doc_id, Paiwan_new)
-pape &lt;- filter(paiwan_caus_df, Affix==&#39;pape&#39;) %&gt;%
-  mutate(doc_id = row_number()) %&gt;%
-  select(doc_id, Paiwan_new)</code></pre>
-<pre class="r"><code>write_csv(paiwan_caus_df, &#39;paiwan_caus_df.csv&#39;)</code></pre>
+write_csv(paiwan_caus_df, &#39;paiwan_caus_df.csv&#39;)
+
+head(paiwan_caus_df[,c(&#39;Paiwan&#39;, &#39;Paiwan_new&#39;)]) %&gt;% print(width=Inf)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   Paiwan                                                                        
+##   &lt;chr&gt;                                                                         
+## 1 &quot;paquziquzip ta bukelulj timadju &quot;                                            
+## 2 &quot;inika pacalivaten nua sakinting a pairang &quot;                                  
+## 3 &quot;adju ari vaiki a pacun tua iga &quot;                                             
+## 4 &quot;a sipualjaljak a lumamad kemasi ta menutjmutj ta tutu na kina patagilj a kip…
+## 5 &quot;na puamin ti giau tua paveli tua kakanen &quot;                                   
+## 6 &quot;parekiljivaljivaku a marekakakaka aya kai nikama &quot;                           
+##   Paiwan_new                                                                    
+##   &lt;chr&gt;                                                                         
+## 1 &quot; pa quziquzip ta bukelulj timadju &quot;                                          
+## 2 &quot;inika pa calivaten nua sakinting a pa irang &quot;                                
+## 3 &quot;adju ari vaiki a pa cun tua iga &quot;                                            
+## 4 &quot;a sipualjaljak a lumamad kemasi ta menutjmutj ta tutu na kina pa tagilj a ki…
+## 5 &quot;na puamin ti giau tua pa veli tua kakanen &quot;                                  
+## 6 &quot; pa rekiljivaljivaku a marekakakaka aya kai nikama &quot;</code></pre>
 <pre class="r"><code>paiwan_caus_df &lt;- paiwan_caus_df %&gt;%
   mutate(doc_id = row_number()) %&gt;%
   select(doc_id, Paiwan_new)</code></pre>
